@@ -27,6 +27,20 @@
             filter: grayscale(0.8); 
         }
 
+        /* تنسيقات البطاقة البيضاء */
+        .digital-card.theme-white {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0;
+        }
+        .digital-card.theme-white .text-white { color: #1e293b !important; }
+        .digital-card.theme-white .text-purple-200 { color: #64748b !important; }
+        .digital-card.theme-white .text-purple-100 { color: #6b21a8 !important; font-weight: 800; }
+        .digital-card.theme-white .bg-white\/10 { background-color: #f8fafc !important; border-color: #e2e8f0 !important; }
+        .digital-card.theme-white .bg-black\/20 { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; }
+        .digital-card.theme-white .border-white\/10 { border-color: #e2e8f0 !important; }
+        .digital-card.theme-white .border-white\/5 { border-color: #e2e8f0 !important; }
+        .digital-card.theme-white .opacity-5 { opacity: 0.03 !important; color: #6b21a8 !important; }
+
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d8b4fe; border-radius: 10px; }
@@ -82,8 +96,8 @@
         <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 no-print">
             <div class="text-center md:text-right">
-                <h1 class="text-3xl font-black text-slate-800"> <span class="text-purple-600 tracking-wider">SparkPark</span></h1>
-                <p class="text-slate-500 text-sm font-medium"> فندق سبارك من هيلتون</p>
+                <h1 class="text-3xl font-black text-slate-800">تطبيق <span class="text-purple-600 tracking-wider">SparkPark</span></h1>
+                <p class="text-slate-500 text-sm font-medium">نظام التصاريح الرقمي - فندق سبارك هيلتون</p>
             </div>
             
             <div class="flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
@@ -117,7 +131,7 @@
                                 <input type="text" id="empLastName" required class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="اللقب">
                             </div>
                             <input type="text" id="empTitle" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm" placeholder="المسمى الوظيفي (اختياري)">
-                            <input type="tel" id="empPhone" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr">
+                            <input type="tel" id="empPhone" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         
                         <div class="pt-2">
@@ -130,9 +144,9 @@
                             <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
                                 <p class="text-[10px] text-purple-500 font-bold mb-3 text-center uppercase">رقم لوحة السيارة</p>
                                 <div class="flex gap-1.5">
-                                    <input type="text" id="pAr" maxlength="3" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg" placeholder="أ ب ج">
-                                    <input type="text" id="pNum" maxlength="4" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg" placeholder="1234">
-                                    <input type="text" id="pEn" maxlength="3" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg uppercase" placeholder="ABC" dir="ltr">
+                                    <input type="text" id="pAr" maxlength="3" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg" placeholder="أ ب ج" oninput="this.value = this.value.replace(/[^\u0600-\u06FF]/g, '')">
+                                    <input type="text" id="pNum" maxlength="4" inputmode="numeric" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg" placeholder="1234" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <input type="text" id="pEn" maxlength="3" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg uppercase" placeholder="ABC" dir="ltr" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase()">
                                 </div>
                             </div>
                         </div>
@@ -157,6 +171,13 @@
                 <!-- Preview Area -->
                 <div class="flex flex-col items-center w-full md:w-auto">
                     <div id="cardExportArea" class="p-4 bg-slate-100 rounded-[2.5rem] hidden w-max mx-auto shadow-sm mt-6 md:mt-0">
+                        
+                        <!-- أزرار اختيار لون البطاقة -->
+                        <div class="flex justify-center gap-4 mb-4 no-print" data-html2canvas-ignore="true">
+                            <button id="btnThemePurple" onclick="setCardTheme('purple')" class="w-8 h-8 rounded-full bg-gradient-to-br from-[#581c87] to-[#7c3aed] shadow-md ring-2 ring-purple-600 ring-offset-2 transition-all" title="بطاقة موف"></button>
+                            <button id="btnThemeWhite" onclick="setCardTheme('white')" class="w-8 h-8 rounded-full bg-white shadow-sm border border-slate-300 transition-all" title="بطاقة بيضاء"></button>
+                        </div>
+
                         <div id="cardPreview" class="digital-card w-[320px] rounded-[2.2rem] p-7 min-h-[520px] flex flex-col relative overflow-hidden shadow-2xl">
                             <!-- Logo Overlay -->
                             <div class="absolute -bottom-12 -right-12 opacity-5 rotate-12">
@@ -164,7 +185,7 @@
                             </div>
 
                             <div class="flex justify-center items-center mb-6 relative z-10">
-                                <img src="imge.png" alt="Spark by Hilton Makkah Aziziyah" class="w-48 h-auto object-contain drop-shadow-sm" onerror="this.style.display='none'">
+                                <img id="cardLogoImage" src="imge.png" alt="Spark by Hilton Makkah Aziziyah" class="w-48 h-auto object-contain drop-shadow-sm" onerror="this.style.display='none'">
                             </div>
                             
                             <div class="flex-grow space-y-6 relative z-10">
@@ -206,8 +227,7 @@
 
                             <!-- تم توسيط البيانات بعد إزالة رمز الاستجابة السريعة -->
                             <div class="mt-6 flex flex-col items-center justify-center border-t border-white/10 pt-5 relative z-10 text-center">
-                                <p id="viewPhone" class="text-sm font-black text-white tracking-widest mb-1" dir="ltr">---</p>
-                                <p class="text-[7px] text-purple-200 font-bold uppercase opacity-80">Security Verification Required</p>
+                                <p id="viewPhone" class="text-sm font-black text-white tracking-widest" dir="ltr">---</p>
                             </div>
                         </div>
                     </div>
@@ -274,6 +294,7 @@
         let employees = JSON.parse(localStorage.getItem('spark_parking_emps')) || [];
         let logs = JSON.parse(localStorage.getItem('spark_parking_logs')) || [];
         let activeId = null;
+        let currentCardTheme = 'purple'; // متغير لحفظ لون البطاقة الحالي
 
         function switchTab(tab) {
             document.querySelectorAll('#view-mgmt, #view-reports').forEach(v => v.classList.add('hidden'));
@@ -379,14 +400,10 @@
             if(document.getElementById('viewPEn')) document.getElementById('viewPEn').innerText = emp.plateEn;
             if(document.getElementById('viewPhone')) document.getElementById('viewPhone').innerText = emp.phone || '---';
             
-            // تحقق من وجود بادج الحالة قبل التعديل عليه (لتفادي خطأ null)
-            const badge = document.getElementById('viewStatusBadge');
-            if (badge) {
-                badge.innerText = emp.isActive ? "Active / نشط" : "Disabled / معطل";
-                badge.className = `px-3 py-1 rounded-full text-[8px] font-black uppercase shadow-sm ${emp.isActive ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`;
-            }
-            
             preview.className = `digital-card w-[320px] rounded-[2.2rem] p-7 min-h-[520px] flex flex-col relative overflow-hidden shadow-2xl ${!emp.isActive ? 'disabled' : ''}`;
+
+            // تطبيق اللون المختار حالياً وتحديث الشعار
+            setCardTheme(currentCardTheme);
 
             const toggleBtn = document.getElementById('toggleStatusBtn');
             if (toggleBtn) {
@@ -406,6 +423,28 @@
             }
 
             if (window.innerWidth < 1024) preview.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setCardTheme(theme) {
+            currentCardTheme = theme;
+            const preview = document.getElementById('cardPreview');
+            const btnPurple = document.getElementById('btnThemePurple');
+            const btnWhite = document.getElementById('btnThemeWhite');
+            const cardLogo = document.getElementById('cardLogoImage');
+            
+            if (!preview) return;
+
+            if (theme === 'white') {
+                preview.classList.add('theme-white');
+                btnWhite.classList.add('ring-2', 'ring-purple-600', 'ring-offset-2', 'border-transparent');
+                btnPurple.classList.remove('ring-2', 'ring-purple-600', 'ring-offset-2');
+                if(cardLogo) cardLogo.src = 'photo.png'; // الشعار الملون للبطاقة البيضاء
+            } else {
+                preview.classList.remove('theme-white');
+                btnPurple.classList.add('ring-2', 'ring-purple-600', 'ring-offset-2');
+                btnWhite.classList.remove('ring-2', 'ring-purple-600', 'ring-offset-2', 'border-transparent');
+                if(cardLogo) cardLogo.src = 'imge.png'; // الشعار الأبيض للبطاقة الموف
+            }
         }
 
         function toggleMovement() {
