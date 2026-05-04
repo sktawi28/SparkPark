@@ -45,15 +45,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d8b4fe; border-radius: 10px; }
 
-        #reader { border: none !important; border-radius: 1.5rem; overflow: hidden; }
-        #reader__dashboard_section_csr button {
-            background-color: var(--spark-purple) !important;
-            color: white !important;
-            border-radius: 0.75rem !important;
-            padding: 8px 16px !important;
-            font-size: 0.875rem !important;
-        }
-
         .img-fallback {
             display: flex; align-items: center; justify-content: center;
             background: #f3e8ff; color: #6b21a8; font-weight: 900;
@@ -121,7 +112,7 @@
             <div class="lg:col-span-4 no-print">
                 <div class="bg-white p-6 rounded-[2rem] shadow-lg border border-slate-100">
                     <h2 class="text-lg font-black mb-5 flex items-center gap-2 text-slate-800">
-                        <span class="text-purple-600">➕</span> إصدار تصريح جديد
+                        <span class="text-purple-600">➕</span> <span id="formTitle">إصدار تصريح جديد</span>
                     </h2>
                     <form id="employeeForm" class="space-y-4">
                         <div class="grid grid-cols-1 gap-3">
@@ -130,8 +121,11 @@
                                 <input type="text" id="empMiddleName" class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="الثاني (اختياري)">
                                 <input type="text" id="empLastName" required class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="اللقب">
                             </div>
+                            <!-- تقييد رقم الهوية بـ 10 خانات -->
+                            <input type="text" id="empNationalId" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="رقم الهوية (اختياري)" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <input type="text" id="empTitle" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm" placeholder="المسمى الوظيفي (اختياري)">
-                            <input type="tel" id="empPhone" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <!-- تقييد رقم الجوال بـ 10 خانات -->
+                            <input type="tel" id="empPhone" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         
                         <div class="pt-2">
@@ -144,13 +138,22 @@
                             <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
                                 <p class="text-[10px] text-purple-500 font-bold mb-3 text-center uppercase">رقم لوحة السيارة</p>
                                 <div class="flex gap-1.5">
-                                    <input type="text" id="pAr" maxlength="3" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg" placeholder="أ ب ج" oninput="this.value = this.value.replace(/[^\u0600-\u06FF]/g, '')">
+                                    <!-- الحروف العربية في 3 خانات -->
+                                    <div class="w-1/3 flex gap-1">
+                                        <input type="text" id="pAr1" maxlength="1" required class="w-full p-2 bg-white rounded-lg text-center font-bold text-sm" placeholder="أ" oninput="this.value = this.value.replace(/[^\u0600-\u06FF]/g, ''); if(this.value) document.getElementById('pAr2').focus()">
+                                        <input type="text" id="pAr2" maxlength="1" required class="w-full p-2 bg-white rounded-lg text-center font-bold text-sm" placeholder="ب" oninput="this.value = this.value.replace(/[^\u0600-\u06FF]/g, ''); if(this.value) document.getElementById('pAr3').focus()">
+                                        <input type="text" id="pAr3" maxlength="1" required class="w-full p-2 bg-white rounded-lg text-center font-bold text-sm" placeholder="ج" oninput="this.value = this.value.replace(/[^\u0600-\u06FF]/g, ''); if(this.value) document.getElementById('pNum').focus()">
+                                    </div>
                                     <input type="text" id="pNum" maxlength="4" inputmode="numeric" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg" placeholder="1234" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     <input type="text" id="pEn" maxlength="3" required class="w-1/3 p-3 bg-white rounded-lg text-center font-bold text-lg uppercase" placeholder="ABC" dir="ltr" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '').toUpperCase()">
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-purple-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-purple-700 active:scale-[0.98] transition-all">حفظ وإصدار البطاقة</button>
+                        <div class="flex gap-2">
+                            <button type="submit" id="submitBtn" class="flex-grow bg-purple-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-purple-700 active:scale-[0.98] transition-all">حفظ وإصدار البطاقة</button>
+                            <!-- زر الإلغاء، يظهر فقط أثناء التعديل -->
+                            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden px-6 bg-slate-200 text-slate-700 font-black rounded-xl hover:bg-slate-300 active:scale-[0.98] transition-all">إلغاء</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -192,7 +195,10 @@
                                 <div class="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
                                     <p class="text-purple-100 text-[9px] mb-0.5 font-bold uppercase">Employee / الموظف</p>
                                     <p id="viewName" class="text-lg font-black text-white truncate">---</p>
-                                    <p id="viewTitle" class="text-[10px] text-purple-200 font-semibold">---</p>
+                                    <div class="flex justify-between items-center mt-1">
+                                        <p id="viewTitle" class="text-[10px] text-purple-200 font-semibold">---</p>
+                                        <p id="viewNationalId" class="text-[9px] text-white font-bold bg-black/20 px-2 py-0.5 rounded tracking-widest hidden" dir="ltr">---</p>
+                                    </div>
                                 </div>
                                 
                                 <div class="bg-black/20 rounded-2xl p-4 border border-white/5 space-y-3">
@@ -225,7 +231,6 @@
                                 </div>
                             </div>
 
-                            <!-- تم توسيط البيانات بعد إزالة رمز الاستجابة السريعة -->
                             <div class="mt-6 flex flex-col items-center justify-center border-t border-white/10 pt-5 relative z-10 text-center">
                                 <p id="viewPhone" class="text-sm font-black text-white tracking-widest" dir="ltr">---</p>
                             </div>
@@ -294,7 +299,8 @@
         let employees = JSON.parse(localStorage.getItem('spark_parking_emps')) || [];
         let logs = JSON.parse(localStorage.getItem('spark_parking_logs')) || [];
         let activeId = null;
-        let currentCardTheme = 'purple'; // متغير لحفظ لون البطاقة الحالي
+        let editingId = null; // متغير لحفظ آي دي الموظف الجاري تعديله
+        let currentCardTheme = 'purple'; 
 
         function switchTab(tab) {
             document.querySelectorAll('#view-mgmt, #view-reports').forEach(v => v.classList.add('hidden'));
@@ -311,36 +317,139 @@
 
         document.getElementById('employeeForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const id = 'ID' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            const natIdVal = document.getElementById('empNationalId').value;
+            const phoneVal = document.getElementById('empPhone').value;
+
+            // التحقق من أن الخانات تساوي 10 بالضبط في حال تم تعبئتها
+            if (natIdVal && natIdVal.length !== 10) {
+                showToast("⚠️ رقم الهوية يجب أن يتكون من 10 أرقام");
+                return;
+            }
+            if (phoneVal && phoneVal.length !== 10) {
+                showToast("⚠️ رقم الجوال يجب أن يتكون من 10 أرقام");
+                return;
+            }
             
-            // دمج الاسم بناءً على الحقول المدخلة مع تجاهل الحقل الاختياري إذا كان فارغاً
             const fName = document.getElementById('empFirstName').value.trim();
             const mName = document.getElementById('empMiddleName').value.trim();
             const lName = document.getElementById('empLastName').value.trim();
             const fullName = [fName, mName, lName].filter(Boolean).join(' ');
 
-            const newEmp = {
-                id: id,
+            // دمج الحروف العربية لتخزينها
+            const plateArCombined = [
+                document.getElementById('pAr1').value,
+                document.getElementById('pAr2').value,
+                document.getElementById('pAr3').value
+            ].join(' ');
+
+            const empData = {
+                id: editingId || ('ID' + Math.random().toString(36).substr(2, 6).toUpperCase()),
+                fName: fName,
+                mName: mName,
+                lName: lName,
                 name: fullName,
+                nationalId: document.getElementById('empNationalId').value || '',
                 title: document.getElementById('empTitle').value || '---',
                 phone: document.getElementById('empPhone').value || '---',
                 brand: document.getElementById('carBrand').value,
                 model: document.getElementById('carModel').value,
                 color: document.getElementById('carColor').value,
-                plateAr: document.getElementById('pAr').value,
+                plateAr: plateArCombined,
                 plateNum: document.getElementById('pNum').value,
-                plateEn: document.getElementById('pEn').value,
-                isActive: true,
-                isInside: false,
-                dateAdded: new Date().toISOString()
+                plateEn: document.getElementById('pEn').value
             };
-            employees.unshift(newEmp);
+
+            if (editingId) {
+                // وضع التعديل
+                const idx = employees.findIndex(e => e.id === editingId);
+                if (idx !== -1) {
+                    // الاحتفاظ بالبيانات السابقة التي لا تعدل من النموذج
+                    empData.isActive = employees[idx].isActive;
+                    empData.isInside = employees[idx].isInside;
+                    empData.dateAdded = employees[idx].dateAdded;
+                    employees[idx] = empData;
+                }
+                showToast("✅ تم تحديث بيانات البطاقة بنجاح");
+                const currentEditedId = editingId; // حفظه لاستدعاء المعاينة بعد الغاء وضع التعديل
+                cancelEdit(); 
+                showPreview(currentEditedId);
+            } else {
+                // وضع إضافة جديد
+                empData.isActive = true;
+                empData.isInside = false;
+                empData.dateAdded = new Date().toISOString();
+                employees.unshift(empData);
+                showToast("✅ تم إصدار التصريح بنجاح");
+                this.reset();
+                showPreview(empData.id);
+            }
+            
             saveData();
-            this.reset();
             renderEmployees();
-            showPreview(id);
-            showToast("✅ تم إصدار التصريح بنجاح");
         });
+
+        // دالة بدء وضع التعديل
+        function editEmp(id) {
+            const emp = employees.find(e => e.id === id);
+            if (!emp) return;
+            
+            editingId = id;
+            document.getElementById('formTitle').innerText = "تعديل بيانات التصريح";
+            document.getElementById('submitBtn').innerText = "تحديث بيانات البطاقة";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            // تعبئة حقول الاسم
+            if (emp.fName !== undefined) {
+                document.getElementById('empFirstName').value = emp.fName;
+                document.getElementById('empMiddleName').value = emp.mName || '';
+                document.getElementById('empLastName').value = emp.lName;
+            } else {
+                // للبيانات القديمة التي لم يتم فصل أسمائها مسبقاً
+                const parts = emp.name.split(' ');
+                if (parts.length === 1) {
+                    document.getElementById('empFirstName').value = parts[0];
+                    document.getElementById('empMiddleName').value = '';
+                    document.getElementById('empLastName').value = '';
+                } else if (parts.length === 2) {
+                    document.getElementById('empFirstName').value = parts[0];
+                    document.getElementById('empMiddleName').value = '';
+                    document.getElementById('empLastName').value = parts[1];
+                } else {
+                    document.getElementById('empFirstName').value = parts[0];
+                    document.getElementById('empLastName').value = parts.pop();
+                    document.getElementById('empMiddleName').value = parts.join(' ');
+                }
+            }
+
+            document.getElementById('empNationalId').value = emp.nationalId || '';
+            document.getElementById('empTitle').value = emp.title === '---' ? '' : emp.title;
+            document.getElementById('empPhone').value = emp.phone === '---' ? '' : emp.phone;
+            document.getElementById('carBrand').value = emp.brand || '';
+            document.getElementById('carModel').value = emp.model || '';
+            document.getElementById('carColor').value = emp.color || '';
+            
+            // توزيع الحروف العربية على الخانات الثلاث
+            const arChars = (emp.plateAr || '').replace(/\s/g, '').split('');
+            document.getElementById('pAr1').value = arChars[0] || '';
+            document.getElementById('pAr2').value = arChars[1] || '';
+            document.getElementById('pAr3').value = arChars[2] || '';
+
+            document.getElementById('pNum').value = emp.plateNum || '';
+            document.getElementById('pEn').value = emp.plateEn || '';
+
+            switchTab('mgmt');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // دالة إلغاء التعديل
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('employeeForm').reset();
+            document.getElementById('formTitle').innerText = "إصدار تصريح جديد";
+            document.getElementById('submitBtn').innerText = "حفظ وإصدار البطاقة";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
 
         function renderEmployees() {
             const list = document.getElementById('employeesList');
@@ -363,7 +472,10 @@
                                 <p class="text-[9px] text-slate-400 font-medium">${emp.title || '---'}</p>
                             </div>
                         </div>
-                        <button onclick="event.stopPropagation(); deleteEmp('${emp.id}')" class="text-slate-300 hover:text-red-500 transition-colors p-1 text-xs">✕</button>
+                        <div class="flex items-center gap-1">
+                            <button onclick="event.stopPropagation(); editEmp('${emp.id}')" class="text-slate-400 hover:text-blue-600 transition-colors p-1.5 text-sm bg-slate-50 hover:bg-blue-50 rounded-lg" title="تعديل">✏️</button>
+                            <button onclick="event.stopPropagation(); deleteEmp('${emp.id}')" class="text-slate-400 hover:text-red-600 transition-colors p-1.5 text-sm bg-slate-50 hover:bg-red-50 rounded-lg" title="حذف">✕</button>
+                        </div>
                     </div>
                     <div class="flex justify-between items-center bg-slate-50/80 p-2 rounded-xl">
                         <div class="text-[9px] font-bold text-slate-500">
@@ -394,6 +506,17 @@
             // التحديث الآمن للعناصر
             if(document.getElementById('viewName')) document.getElementById('viewName').innerText = emp.name;
             if(document.getElementById('viewTitle')) document.getElementById('viewTitle').innerText = emp.title || '---';
+            
+            const natIdEl = document.getElementById('viewNationalId');
+            if(natIdEl) {
+                if(emp.nationalId && emp.nationalId !== '---' && emp.nationalId !== '') {
+                    natIdEl.innerText = emp.nationalId;
+                    natIdEl.classList.remove('hidden');
+                } else {
+                    natIdEl.classList.add('hidden');
+                }
+            }
+
             if(document.getElementById('viewVehicle')) document.getElementById('viewVehicle').innerText = `${emp.brand} ${emp.model} - ${emp.color || '---'}`;
             if(document.getElementById('viewPAr')) document.getElementById('viewPAr').innerText = emp.plateAr;
             if(document.getElementById('viewPNum')) document.getElementById('viewPNum').innerText = emp.plateNum;
@@ -543,8 +666,9 @@
         }
 
         function deleteEmp(id) {
-            if(confirm("هل أنت متأكد من حذف هذا التصريح؟")) {
+            if(confirm("هل أنت متأكد من حذف هذا التصريح؟ لن تتمكن من التراجع.")) {
                 employees = employees.filter(e => e.id !== id);
+                if (editingId === id) cancelEdit();
                 saveData();
                 renderEmployees();
                 document.getElementById('cardExportArea').classList.add('hidden');
