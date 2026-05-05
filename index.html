@@ -518,7 +518,7 @@
             }
 
             if(document.getElementById('viewVehicle')) document.getElementById('viewVehicle').innerText = `${emp.brand} ${emp.model} - ${emp.color || '---'}`;
-            if(document.getElementById('viewPAr')) document.getElementById('viewPAr').innerText = (emp.plateAr || '').replace(/\s/g, '').split('').join(' ');
+            if(document.getElementById('viewPAr')) document.getElementById('viewPAr').innerText = (emp.plateAr || '').replace(/\s/g, '');
             if(document.getElementById('viewPNum')) document.getElementById('viewPNum').innerText = emp.plateNum;
             if(document.getElementById('viewPEn')) document.getElementById('viewPEn').innerText = emp.plateEn;
             if(document.getElementById('viewPhone')) document.getElementById('viewPhone').innerText = emp.phone || '---';
