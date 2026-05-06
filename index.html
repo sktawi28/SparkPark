@@ -102,7 +102,7 @@
 
         <!-- Navigation Tabs -->
         <div class="flex flex-wrap gap-2 mb-8 no-print bg-white/50 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200 w-full md:w-max">
-            <button onclick="switchTab('mgmt')" id="tab-mgmt" class="px-6 py-2.5 rounded-xl font-bold transition-all tab-active">الموظفين</button>
+            <button onclick="switchTab('mgmt')" id="tab-mgmt" class="px-6 py-2.5 rounded-xl font-bold transition-all tab-active">التصاريح والمجموعات</button>
             <button onclick="switchTab('reports')" id="tab-reports" class="px-6 py-2.5 rounded-xl font-bold transition-all text-slate-500 hover:bg-white">السجل اليومي</button>
         </div>
 
@@ -111,18 +111,32 @@
             <!-- Form -->
             <div class="lg:col-span-4 no-print">
                 <div class="bg-white p-6 rounded-[2rem] shadow-lg border border-slate-100">
-                    <h2 class="text-lg font-black mb-5 flex items-center gap-2 text-slate-800">
-                        <span class="text-purple-600">➕</span> <span id="formTitle">إصدار تصريح جديد</span>
+                    <h2 class="text-lg font-black mb-5 flex items-center justify-between text-slate-800">
+                        <div class="flex items-center gap-2">
+                            <span class="text-purple-600">➕</span> <span id="formTitle">إصدار تصريح جديد</span>
+                        </div>
+                        <button type="button" onclick="openGroupsModal()" class="text-xs bg-purple-50 text-purple-600 px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-all font-bold shadow-sm">المجموعات ⚙️</button>
                     </h2>
                     <form id="employeeForm" class="space-y-4">
                         <div class="grid grid-cols-1 gap-3">
+                            <!-- اختيار المجموعة -->
+                            <select id="empGroup" required class="w-full p-3.5 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-sm text-slate-700 cursor-pointer">
+                                <!-- سيتم التعبئة برمجياً -->
+                            </select>
+
                             <div class="grid grid-cols-3 gap-2">
                                 <input type="text" id="empFirstName" required class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="الاسم الأول">
                                 <input type="text" id="empMiddleName" class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="الثاني (اختياري)">
                                 <input type="text" id="empLastName" required class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="اللقب">
                             </div>
-                            <!-- تقييد رقم الهوية بـ 10 خانات -->
-                            <input type="text" id="empNationalId" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="رقم الهوية (اختياري)" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <!-- تقييد رقم الهوية بـ 10 خانات -->
+                                <input type="text" id="empNationalId" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="رقم الهوية (اختياري)" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <!-- الرقم الوظيفي -->
+                                <input type="text" id="empId" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="الرقم الوظيفي (اختياري)" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+
                             <input type="text" id="empTitle" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm" placeholder="المسمى الوظيفي (اختياري)">
                             <!-- تقييد رقم الجوال بـ 10 خانات -->
                             <input type="tel" id="empPhone" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -163,8 +177,14 @@
                 <!-- List -->
                 <div class="flex-grow bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 h-[600px] flex flex-col no-print">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-md font-black">الموظفين المسجلين</h2>
-                        <span id="listCount" class="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-md font-black">البطاقات المسجلة</h2>
+                            <span id="listCount" class="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+                        </div>
+                        <!-- فلتر المجموعات -->
+                        <select id="filterGroup" onchange="renderEmployees()" class="bg-slate-50 border border-slate-100 text-slate-600 text-[11px] rounded-lg px-3 py-1.5 outline-none font-bold cursor-pointer transition-all hover:bg-slate-100">
+                            <option value="all">جميع المجموعات</option>
+                        </select>
                     </div>
                     <div id="employeesList" class="space-y-3 overflow-y-auto custom-scrollbar flex-grow pr-1">
                         <!-- JS Content -->
@@ -193,11 +213,14 @@
                             
                             <div class="flex-grow space-y-6 relative z-10">
                                 <div class="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
-                                    <p class="text-purple-100 text-[9px] mb-0.5 font-bold uppercase">Employee / الموظف</p>
+                                    <p id="viewGroupTitle" class="text-purple-100 text-[10px] mb-1 font-black uppercase tracking-widest">---</p>
                                     <p id="viewName" class="text-lg font-black text-white truncate">---</p>
                                     <div class="flex justify-between items-center mt-1">
                                         <p id="viewTitle" class="text-[10px] text-purple-200 font-semibold">---</p>
-                                        <p id="viewNationalId" class="text-[9px] text-white font-bold bg-black/20 px-2 py-0.5 rounded tracking-widest hidden" dir="ltr">---</p>
+                                        <div class="flex gap-1">
+                                            <p id="viewEmpId" class="text-[9px] text-white font-bold bg-black/20 px-2 py-0.5 rounded tracking-widest hidden" dir="ltr">---</p>
+                                            <p id="viewNationalId" class="text-[9px] text-white font-bold bg-black/20 px-2 py-0.5 rounded tracking-widest hidden" dir="ltr">---</p>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -292,16 +315,154 @@
         </div>
     </div>
 
+    <!-- نافذة المجموعات المنبثقة (Modal) -->
+    <div id="groupsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] p-6 w-full max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="groupsModalContent">
+            <button onclick="closeGroupsModal()" class="absolute top-4 left-4 text-slate-400 hover:text-red-500 bg-slate-50 hover:bg-red-50 p-2.5 rounded-full transition-all">✕</button>
+            <h3 class="text-xl font-black mb-6 flex items-center gap-2"><span class="text-purple-600">⚙️</span> إدارة المجموعات</h3>
+            
+            <div class="flex gap-2 mb-6">
+                <input type="text" id="newGroupName" class="flex-grow p-3 bg-slate-50 rounded-xl outline-none text-sm font-bold border border-slate-200 focus:border-purple-300 transition-all" placeholder="اسم المجموعة الجديدة (مثال: الزوار)">
+                <button onclick="addGroup()" class="bg-purple-600 text-white px-5 rounded-xl font-bold hover:bg-purple-700 active:scale-95 transition-all text-sm">إضافة</button>
+            </div>
+
+            <div id="groupsList" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                <!-- سيتم تعبئة المجموعات هنا برمجياً -->
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة عرض الصورة النهائية للهواتف (Fallback Modal) -->
+    <div id="imageResultModal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md hidden z-[100] flex flex-col items-center justify-center p-6 opacity-0 transition-opacity duration-300">
+        <button onclick="closeImageModal()" class="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all">✕</button>
+        <h3 class="text-white font-black mb-5 text-lg text-center flex flex-col gap-2">
+            <span>✨ البطاقة جاهزة للحفظ!</span>
+            <span class="text-purple-300 text-xs font-semibold bg-purple-900/50 px-4 py-2 rounded-lg">اضغط مطولاً على الصورة أدناه لحفظها في الاستديو</span>
+        </h3>
+        <div class="relative w-full max-w-sm flex justify-center">
+            <img id="finalGeneratedImage" src="" alt="بطاقة الموقف جاهزة" class="max-h-[60vh] w-auto object-contain rounded-[2rem] shadow-2xl border-4 border-white/10">
+        </div>
+        <button onclick="closeImageModal()" class="mt-8 bg-white text-slate-900 px-10 py-3.5 rounded-xl font-black shadow-lg hover:bg-slate-100 active:scale-95 transition-all text-sm">إغلاق وتراجع</button>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-3.5 rounded-full shadow-2xl hidden z-50 text-xs font-bold flex items-center gap-3 transition-all"></div>
 
     <script>
+        // التهيئة والمتغيرات الأساسية
+        let groups = JSON.parse(localStorage.getItem('spark_parking_groups')) || [{id: 'g_default', name: 'الموظفين'}];
         let employees = JSON.parse(localStorage.getItem('spark_parking_emps')) || [];
         let logs = JSON.parse(localStorage.getItem('spark_parking_logs')) || [];
+        
         let activeId = null;
-        let editingId = null; // متغير لحفظ آي دي الموظف الجاري تعديله
+        let editingId = null; 
         let currentCardTheme = 'purple'; 
 
+        // دوال نافذة المجموعات (Modal)
+        function openGroupsModal() {
+            const modal = document.getElementById('groupsModal');
+            const content = document.getElementById('groupsModalContent');
+            modal.classList.remove('hidden');
+            // تأخير بسيط لتفعيل الأنيميشن
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+            renderGroupManager();
+        }
+
+        function closeGroupsModal() {
+            const modal = document.getElementById('groupsModal');
+            const content = document.getElementById('groupsModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function renderGroupManager() {
+            const list = document.getElementById('groupsList');
+            list.innerHTML = groups.map(g => `
+                <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border border-slate-100 hover:border-purple-100 transition-all">
+                    <span class="font-bold text-sm text-slate-700 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-400"></span> ${g.name}</span>
+                    <div class="flex gap-1.5">
+                        <button onclick="editGroupPrompt('${g.id}')" class="text-blue-500 hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-lg text-[10px] font-black transition-colors">تعديل</button>
+                        <button onclick="deleteGroup('${g.id}')" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg text-[10px] font-black transition-colors">حذف</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateGroupSelects();
+        }
+
+        function updateGroupSelects() {
+            const formSelect = document.getElementById('empGroup');
+            const filterSelect = document.getElementById('filterGroup');
+            
+            const optionsHtml = groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            
+            if(formSelect) {
+                const currentVal = formSelect.value;
+                formSelect.innerHTML = optionsHtml;
+                // الحفاظ على التحديد السابق إن وجد
+                if(currentVal && groups.find(g => g.id === currentVal)) formSelect.value = currentVal;
+            }
+            
+            if(filterSelect) {
+                const currentFilter = filterSelect.value;
+                filterSelect.innerHTML = `<option value="all">جميع المجموعات</option>` + optionsHtml;
+                if(currentFilter && (currentFilter === 'all' || groups.find(g => g.id === currentFilter))) filterSelect.value = currentFilter;
+            }
+        }
+
+        function addGroup() {
+            const input = document.getElementById('newGroupName');
+            const name = input.value.trim();
+            if(!name) return showToast("⚠️ يرجى كتابة اسم المجموعة أولاً");
+            
+            groups.push({ id: 'G' + Math.random().toString(36).substr(2, 6).toUpperCase(), name: name });
+            input.value = '';
+            saveData();
+            renderGroupManager();
+            showToast("✅ تم إضافة المجموعة بنجاح");
+        }
+
+        function editGroupPrompt(id) {
+            const group = groups.find(g => g.id === id);
+            if(!group) return;
+            const newName = prompt("أدخل اسم المجموعة الجديد:", group.name);
+            if(newName && newName.trim() !== '') {
+                group.name = newName.trim();
+                saveData();
+                renderGroupManager();
+                renderEmployees();
+                if(activeId) showPreview(activeId); 
+                showToast("✅ تم تعديل اسم المجموعة");
+            }
+        }
+
+        function deleteGroup(id) {
+            if(groups.length <= 1) return showToast("❌ لا يمكن حذف المجموعة الوحيدة المتوفرة!");
+            
+            if(confirm("هل أنت متأكد من حذف هذه المجموعة؟ سيتم نقل جميع البطاقات المرتبطة بها إلى المجموعة الافتراضية لحماية بياناتهم.")) {
+                groups = groups.filter(g => g.id !== id);
+                const defaultGroupId = groups[0].id;
+                
+                // تحديث جميع الموظفين التابعين للمجموعة المحذوفة
+                employees.forEach(emp => {
+                    if(emp.groupId === id) emp.groupId = defaultGroupId;
+                });
+                
+                saveData();
+                renderGroupManager();
+                renderEmployees();
+                if(activeId) showPreview(activeId);
+                showToast("🗑️ تم حذف المجموعة بنجاح");
+            }
+        }
+
+        // دوال التنقل
         function switchTab(tab) {
             document.querySelectorAll('#view-mgmt, #view-reports').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${tab}`).classList.remove('hidden');
@@ -315,28 +476,21 @@
             if (tab === 'reports') renderLogs();
         }
 
+        // حفظ بيانات الموظف
         document.getElementById('employeeForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const natIdVal = document.getElementById('empNationalId').value;
             const phoneVal = document.getElementById('empPhone').value;
 
-            // التحقق من أن الخانات تساوي 10 بالضبط في حال تم تعبئتها
-            if (natIdVal && natIdVal.length !== 10) {
-                showToast("⚠️ رقم الهوية يجب أن يتكون من 10 أرقام");
-                return;
-            }
-            if (phoneVal && phoneVal.length !== 10) {
-                showToast("⚠️ رقم الجوال يجب أن يتكون من 10 أرقام");
-                return;
-            }
+            if (natIdVal && natIdVal.length !== 10) return showToast("⚠️ رقم الهوية يجب أن يتكون من 10 أرقام");
+            if (phoneVal && phoneVal.length !== 10) return showToast("⚠️ رقم الجوال يجب أن يتكون من 10 أرقام");
             
             const fName = document.getElementById('empFirstName').value.trim();
             const mName = document.getElementById('empMiddleName').value.trim();
             const lName = document.getElementById('empLastName').value.trim();
             const fullName = [fName, mName, lName].filter(Boolean).join(' ');
 
-            // دمج الحروف العربية بمسافات لعدم التصاقها (مع تجاهل الخانات الفارغة)
             const plateArCombined = [
                 document.getElementById('pAr1').value,
                 document.getElementById('pAr2').value,
@@ -345,13 +499,15 @@
 
             const empData = {
                 id: editingId || ('ID' + Math.random().toString(36).substr(2, 6).toUpperCase()),
+                groupId: document.getElementById('empGroup').value, // التقاط المجموعة
                 fName: fName,
                 mName: mName,
                 lName: lName,
                 name: fullName,
-                nationalId: document.getElementById('empNationalId').value || '',
+                nationalId: natIdVal || '',
+                employeeId: document.getElementById('empId').value || '',
                 title: document.getElementById('empTitle').value || '---',
-                phone: document.getElementById('empPhone').value || '---',
+                phone: phoneVal || '---',
                 brand: document.getElementById('carBrand').value,
                 model: document.getElementById('carModel').value,
                 color: document.getElementById('carColor').value,
@@ -361,21 +517,18 @@
             };
 
             if (editingId) {
-                // وضع التعديل
                 const idx = employees.findIndex(e => e.id === editingId);
                 if (idx !== -1) {
-                    // الاحتفاظ بالبيانات السابقة التي لا تعدل من النموذج
                     empData.isActive = employees[idx].isActive;
                     empData.isInside = employees[idx].isInside;
                     empData.dateAdded = employees[idx].dateAdded;
                     employees[idx] = empData;
                 }
                 showToast("✅ تم تحديث بيانات البطاقة بنجاح");
-                const currentEditedId = editingId; // حفظه لاستدعاء المعاينة بعد الغاء وضع التعديل
+                const currentEditedId = editingId;
                 cancelEdit(); 
                 showPreview(currentEditedId);
             } else {
-                // وضع إضافة جديد
                 empData.isActive = true;
                 empData.isInside = false;
                 empData.dateAdded = new Date().toISOString();
@@ -389,7 +542,6 @@
             renderEmployees();
         });
 
-        // دالة بدء وضع التعديل
         function editEmp(id) {
             const emp = employees.find(e => e.id === id);
             if (!emp) return;
@@ -399,13 +551,15 @@
             document.getElementById('submitBtn').innerText = "تحديث بيانات البطاقة";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
 
-            // تعبئة حقول الاسم
+            // جلب المجموعة (إذا كانت قديمة نضعها في الافتراضي)
+            const gId = emp.groupId || groups[0].id;
+            document.getElementById('empGroup').value = gId;
+
             if (emp.fName !== undefined) {
                 document.getElementById('empFirstName').value = emp.fName;
                 document.getElementById('empMiddleName').value = emp.mName || '';
                 document.getElementById('empLastName').value = emp.lName;
             } else {
-                // للبيانات القديمة التي لم يتم فصل أسمائها مسبقاً
                 const parts = emp.name.split(' ');
                 if (parts.length === 1) {
                     document.getElementById('empFirstName').value = parts[0];
@@ -423,13 +577,13 @@
             }
 
             document.getElementById('empNationalId').value = emp.nationalId || '';
+            document.getElementById('empId').value = emp.employeeId || '';
             document.getElementById('empTitle').value = emp.title === '---' ? '' : emp.title;
             document.getElementById('empPhone').value = emp.phone === '---' ? '' : emp.phone;
             document.getElementById('carBrand').value = emp.brand || '';
             document.getElementById('carModel').value = emp.model || '';
             document.getElementById('carColor').value = emp.color || '';
             
-            // توزيع الحروف العربية على الخانات الثلاث
             const arChars = (emp.plateAr || '').replace(/\s/g, '').split('');
             document.getElementById('pAr1').value = arChars[0] || '';
             document.getElementById('pAr2').value = arChars[1] || '';
@@ -442,7 +596,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // دالة إلغاء التعديل
         function cancelEdit() {
             editingId = null;
             document.getElementById('employeeForm').reset();
@@ -453,23 +606,32 @@
 
         function renderEmployees() {
             const list = document.getElementById('employeesList');
-            document.getElementById('listCount').innerText = employees.length;
+            const filterGroupId = document.getElementById('filterGroup').value;
             
-            if (!employees.length) {
-                list.innerHTML = `<div class="text-center py-20 opacity-20"><p class="text-4xl">📭</p><p class="text-xs mt-2">لا يوجد تصاريح</p></div>`;
-                return;
-            }
+            // تطبيق الفلترة
+            const filteredEmployees = filterGroupId === 'all' 
+                ? employees 
+                : employees.filter(emp => (emp.groupId || groups[0].id) === filterGroupId);
 
-            list.innerHTML = employees.map(emp => `
+            document.getElementById('listCount').innerText = filteredEmployees.length;
+            
+            if (!filteredLogsOrEmps(filteredEmployees, list, "لا يوجد بطاقات في هذه المجموعة")) return;
+
+            list.innerHTML = filteredEmployees.map(emp => {
+                const groupObj = groups.find(g => g.id === (emp.groupId || groups[0].id)) || groups[0];
+                return `
                 <div onclick="showPreview('${emp.id}')" class="group p-4 bg-white border ${emp.isActive ? 'border-slate-50' : 'border-red-50 bg-red-50/10'} rounded-2xl cursor-pointer hover:border-purple-200 hover:shadow-md transition-all flex flex-col gap-3 relative">
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-purple-50 text-purple-600 font-bold text-[10px]">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-purple-50 text-purple-600 font-bold text-xs border border-purple-100">
                                 ${emp.name.charAt(0)}
                             </div>
                             <div>
-                                <h4 class="font-bold text-slate-800 text-xs">${emp.name}</h4>
-                                <p class="text-[9px] text-slate-400 font-medium">${emp.title || '---'}</p>
+                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">${emp.name}</h4>
+                                <div class="flex gap-2">
+                                    <span class="text-[8px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">${groupObj.name}</span>
+                                    <span class="text-[9px] text-slate-400 font-medium">${emp.title !== '---' ? emp.title : ''}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="flex items-center gap-1">
@@ -477,17 +639,27 @@
                             <button onclick="event.stopPropagation(); deleteEmp('${emp.id}')" class="text-slate-400 hover:text-red-600 transition-colors p-1.5 text-sm bg-slate-50 hover:bg-red-50 rounded-lg" title="حذف">✕</button>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center bg-slate-50/80 p-2 rounded-xl">
-                        <div class="text-[9px] font-bold text-slate-500">
+                    <div class="flex justify-between items-center bg-slate-50/80 p-2.5 rounded-xl">
+                        <div class="text-[10px] font-bold text-slate-500">
                             ${emp.brand} • ${emp.plateNum}
                         </div>
-                        <span class="text-[7px] px-2 py-0.5 rounded-full font-black uppercase ${emp.isInside ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-400'}">
-                            ${emp.isInside ? 'داخل المواقف' : 'خارج'}
+                        <span class="text-[8px] px-2.5 py-1 rounded-full font-black uppercase ${emp.isInside ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-500'}">
+                            ${emp.isInside ? 'داخل المواقف' : 'بالخارج'}
                         </span>
                     </div>
                 </div>
-            `).join('');
-            updateStats();
+            `}).join('');
+            
+            document.getElementById('activeStats').innerText = employees.length; // عرض الإجمالي الكلي أعلى الصفحة
+        }
+
+        // مساعدة للريندر
+        function filteredLogsOrEmps(arr, container, msg) {
+            if (!arr.length) {
+                container.innerHTML = `<div class="text-center py-20 opacity-20"><p class="text-4xl mb-2">📭</p><p class="text-xs font-bold">${msg}</p></div>`;
+                return false;
+            }
+            return true;
         }
 
         function showPreview(id) {
@@ -498,15 +670,26 @@
             const exportArea = document.getElementById('cardExportArea');
             const preview = document.getElementById('cardPreview');
             
-            // إظهار منطقة المعاينة والبطاقة
             exportArea.classList.remove('hidden');
             preview.classList.remove('hidden');
             document.getElementById('actionButtons').classList.remove('hidden');
 
-            // التحديث الآمن للعناصر
+            const groupObj = groups.find(g => g.id === (emp.groupId || groups[0].id)) || groups[0];
+
+            if(document.getElementById('viewGroupTitle')) document.getElementById('viewGroupTitle').innerText = groupObj.name;
             if(document.getElementById('viewName')) document.getElementById('viewName').innerText = emp.name;
             if(document.getElementById('viewTitle')) document.getElementById('viewTitle').innerText = emp.title || '---';
             
+            const empIdEl = document.getElementById('viewEmpId');
+            if(empIdEl) {
+                if(emp.employeeId && emp.employeeId !== '---' && emp.employeeId !== '') {
+                    empIdEl.innerText = 'ر.و: ' + emp.employeeId;
+                    empIdEl.classList.remove('hidden');
+                } else {
+                    empIdEl.classList.add('hidden');
+                }
+            }
+
             const natIdEl = document.getElementById('viewNationalId');
             if(natIdEl) {
                 if(emp.nationalId && emp.nationalId !== '---' && emp.nationalId !== '') {
@@ -525,7 +708,6 @@
             
             preview.className = `digital-card w-[320px] rounded-[2.2rem] p-7 min-h-[520px] flex flex-col relative overflow-hidden shadow-2xl ${!emp.isActive ? 'disabled' : ''}`;
 
-            // تطبيق اللون المختار حالياً وتحديث الشعار
             setCardTheme(currentCardTheme);
 
             const toggleBtn = document.getElementById('toggleStatusBtn');
@@ -561,12 +743,12 @@
                 preview.classList.add('theme-white');
                 btnWhite.classList.add('ring-2', 'ring-purple-600', 'ring-offset-2', 'border-transparent');
                 btnPurple.classList.remove('ring-2', 'ring-purple-600', 'ring-offset-2');
-                if(cardLogo) cardLogo.src = 'photo.png'; // الشعار الملون للبطاقة البيضاء
+                if(cardLogo) cardLogo.src = 'photo.png'; 
             } else {
                 preview.classList.remove('theme-white');
                 btnPurple.classList.add('ring-2', 'ring-purple-600', 'ring-offset-2');
                 btnWhite.classList.remove('ring-2', 'ring-purple-600', 'ring-offset-2', 'border-transparent');
-                if(cardLogo) cardLogo.src = 'imge.png'; // الشعار الأبيض للبطاقة الموف
+                if(cardLogo) cardLogo.src = 'imge.png'; 
             }
         }
 
@@ -584,8 +766,6 @@
             
             employees[idx].isInside = (type === 'IN');
             const now = new Date();
-            
-            // استخراج التاريخ بصيغة ISO لتسهيل الفلترة (YYYY-MM-DD)
             const localIsoDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
             
             logs.unshift({
@@ -594,7 +774,7 @@
                 type: type === 'IN' ? 'دخول' : 'خروج',
                 time: now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
                 date: now.toLocaleDateString('ar-SA'),
-                isoDate: localIsoDate // حقل جديد لتسهيل البحث بالتاريخ
+                isoDate: localIsoDate 
             });
             
             saveData();
@@ -618,17 +798,9 @@
         function renderLogs() {
             const tbody = document.getElementById('logsTableBody');
             const type = document.getElementById('reportType').value;
-            let filterValue = '';
+            let filterValue = type === 'daily' ? document.getElementById('reportDateInput').value : document.getElementById('reportMonthInput').value;
             
-            if (type === 'daily') {
-                filterValue = document.getElementById('reportDateInput').value; // صيغة: YYYY-MM-DD
-            } else {
-                filterValue = document.getElementById('reportMonthInput').value; // صيغة: YYYY-MM
-            }
-            
-            // فلترة السجلات بناءً على التاريخ
             const filteredLogs = logs.filter(l => {
-                // استخدام isoDate إذا كان متوفراً، أو استخلاصه من السجلات القديمة
                 const logDate = l.isoDate || new Date().toISOString().split('T')[0]; 
                 return logDate.startsWith(filterValue);
             });
@@ -649,13 +821,9 @@
         }
 
         function saveData() {
+            localStorage.setItem('spark_parking_groups', JSON.stringify(groups));
             localStorage.setItem('spark_parking_emps', JSON.stringify(employees));
             localStorage.setItem('spark_parking_logs', JSON.stringify(logs));
-            updateStats();
-        }
-
-        function updateStats() {
-            document.getElementById('activeStats').innerText = employees.length;
         }
 
         function showToast(text) {
@@ -686,6 +854,23 @@
             }
         }
 
+        // نافذة عرض الصورة المنبثقة للهواتف
+        function showImageModal(dataUrl) {
+            const modal = document.getElementById('imageResultModal');
+            const img = document.getElementById('finalGeneratedImage');
+            img.src = dataUrl;
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            showToast("✅ البطاقة جاهزة للحفظ");
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageResultModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
         async function downloadImage() {
             const emp = employees.find(e => e.id === activeId);
             if (!emp) return;
@@ -695,64 +880,48 @@
             
             showToast("⏳ جاري تجهيز الصورة...");
             try {
-                // إزالة الظلال وخلفية الحاوية مؤقتاً لتجنب ظهور حواف بيضاء حول الصورة
                 element.classList.remove('shadow-2xl');
                 const originalBg = parent.style.backgroundColor;
                 parent.style.backgroundColor = 'transparent';
 
-                // استخدام scale 3 لجودة أعلى مع الحفاظ على شفافية الزوايا تماماً
                 const canvas = await html2canvas(element, {
                     scale: 3, 
                     useCORS: true, 
+                    allowTaint: true, // لتفادي مشاكل الحماية مع الصور المدمجة
                     backgroundColor: null 
                 });
                 
-                // إعادة الظلال والخلفية بعد التقاط الصورة مباشرة
                 element.classList.add('shadow-2xl');
                 parent.style.backgroundColor = originalBg;
                 
-                canvas.toBlob(async function(blob) {
-                    const fileName = `Spark_Card_${emp.name}.png`;
-                    const file = new File([blob], fileName, { type: 'image/png' });
+                const dataUrl = canvas.toDataURL('image/png');
 
-                    // التحقق مما إذا كان الهاتف يدعم ميزة المشاركة الأصلية للملفات
+                // المحاولة الأولى: استخدام نظام المشاركة الأصلية للهاتف (مفيد للواتساب ومباشرة للاستديو)
+                try {
+                    const response = await fetch(dataUrl);
+                    const blob = await response.blob();
+                    const file = new File([blob], `Spark_Card_${emp.name}.png`, { type: 'image/png' });
+
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'بطاقة SparkPark',
-                                text: `بطاقة دخول الموظف: ${emp.name}`
-                            });
-                            showToast("✅ تم بنجاح");
-                        } catch (error) {
-                            // إذا قام المستخدم بإلغاء المشاركة، نتجاهل الخطأ. غير ذلك نقوم بالتنزيل العادي.
-                            if (error.name !== 'AbortError') {
-                                fallbackDownload(blob, fileName);
-                            }
-                        }
-                    } else {
-                        // المتصفح لا يدعم المشاركة، ننتقل للتحميل المباشر
-                        fallbackDownload(blob, fileName);
+                        await navigator.share({
+                            files: [file],
+                            title: 'بطاقة SparkPark',
+                            text: `بطاقة دخول الموظف: ${emp.name}`
+                        });
+                        showToast("✅ تم بنجاح");
+                        return; // إذا نجحت المشاركة لا نعرض النافذة
                     }
-                }, 'image/png');
+                } catch (error) {
+                    console.log("تم الإلغاء أو لا يدعم المشاركة", error);
+                }
+
+                // المحاولة البديلة والآمنة 100% للهواتف: إظهار الصورة في النافذة ليضغط عليها مطولاً
+                showImageModal(dataUrl);
                 
             } catch (err) {
                 console.error(err);
                 showToast("❌ حدث خطأ أثناء تجهيز الصورة");
             }
-        }
-
-        // دالة مساعدة للتحميل المباشر (كبديل في حال عدم توفر قائمة المشاركة)
-        function fallbackDownload(blob, fileName) {
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-            showToast("✅ تم حفظ الصورة بنجاح");
         }
 
         async function exportReportPDF() {
@@ -782,6 +951,7 @@
 
         window.onload = () => {
             initDateInputs();
+            updateGroupSelects(); // تحميل المجموعات في القوائم المنسدلة
             renderEmployees();
             switchTab('mgmt');
         };
