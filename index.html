@@ -126,23 +126,23 @@
 
                             <div class="grid grid-cols-3 gap-2">
                                 <input type="text" id="empFirstName" required class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="الاسم الأول">
-                                <input type="text" id="empMiddleName" class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="الثاني (اختياري)">
+                                <input type="text" id="empMiddleName" class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="الثاني">
                                 <input type="text" id="empLastName" required class="w-full p-3 bg-slate-50 rounded-xl outline-none border-2 border-transparent focus:border-purple-200 transition-all font-bold text-xs text-center" placeholder="اللقب">
                             </div>
                             
                             <div class="grid grid-cols-2 gap-2">
                                 <!-- تقييد رقم الهوية بـ 10 خانات -->
-                                <input type="text" id="empNationalId" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="رقم الهوية (اختياري)" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <input type="text" id="empNationalId" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="رقم الهوية" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 <!-- الرقم الوظيفي -->
-                                <input type="text" id="empId" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="الرقم الوظيفي (اختياري)" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <input type="text" id="empId" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm font-mono" placeholder="الرقم الوظيفي" dir="ltr" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             </div>
 
-                            <input type="text" id="empTitle" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm" placeholder="المسمى الوظيفي (اختياري)">
+                            <input type="text" id="empTitle" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm" placeholder="المسمى الوظيفي">
                             
                             <!-- اختيار القارة والدولة -->
                             <div class="grid grid-cols-2 gap-2">
                                 <select id="empContinent" onchange="updateCountries()" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm text-slate-700 cursor-pointer focus:border-purple-200 transition-all border-2 border-transparent">
-                                    <option value="" disabled selected>القارة (اختياري)</option>
+                                    <option value="" disabled selected>القارة</option>
                                     <option value="africa">🌍 أفريقيا</option>
                                     <option value="asia">🌏 آسيا</option>
                                     <option value="europe">🌍 أوروبا</option>
@@ -156,14 +156,14 @@
                             </div>
                             
                             <!-- تقييد رقم الجوال بـ 10 خانات -->
-                            <input type="tel" id="empPhone" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <input type="tel" id="empPhone" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         
                         <div class="pt-2">
                             <div class="grid grid-cols-3 gap-2 mb-2">
-                                <input type="text" id="carBrand" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="الماركة (اختياري)">
-                                <input type="text" id="carModel" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="الطراز (اختياري)">
-                                <input type="text" id="carColor" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="اللون (اختياري)">
+                                <input type="text" id="carBrand" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="الماركة">
+                                <input type="text" id="carModel" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="الطراز">
+                                <input type="text" id="carColor" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="اللون">
                             </div>
                             
                             <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
