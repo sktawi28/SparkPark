@@ -138,15 +138,32 @@
                             </div>
 
                             <input type="text" id="empTitle" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm" placeholder="المسمى الوظيفي (اختياري)">
+                            
+                            <!-- اختيار القارة والدولة -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="empContinent" onchange="updateCountries()" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm text-slate-700 cursor-pointer focus:border-purple-200 transition-all border-2 border-transparent">
+                                    <option value="" disabled selected>القارة (اختياري)</option>
+                                    <option value="africa">🌍 أفريقيا</option>
+                                    <option value="asia">🌏 آسيا</option>
+                                    <option value="europe">🌍 أوروبا</option>
+                                    <option value="na">🌎 أمريكا الشمالية</option>
+                                    <option value="sa">🌎 أمريكا الجنوبية</option>
+                                    <option value="oceania">🌏 أوقيانوسيا</option>
+                                </select>
+                                <select id="empNationality" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-sm text-slate-700 cursor-pointer focus:border-purple-200 transition-all border-2 border-transparent disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                    <option value="" disabled selected>الدولة</option>
+                                </select>
+                            </div>
+                            
                             <!-- تقييد رقم الجوال بـ 10 خانات -->
                             <input type="tel" id="empPhone" maxlength="10" minlength="10" class="w-full p-3.5 bg-slate-50 rounded-xl outline-none text-left text-sm" placeholder="رقم الجوال (اختياري)" dir="ltr" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         
                         <div class="pt-2">
                             <div class="grid grid-cols-3 gap-2 mb-2">
-                                <input type="text" id="carBrand" required class="p-3 bg-slate-50 rounded-xl outline-none text-xs text-center font-bold" placeholder="الماركة">
-                                <input type="text" id="carModel" required class="p-3 bg-slate-50 rounded-xl outline-none text-xs text-center font-bold" placeholder="الطراز">
-                                <input type="text" id="carColor" required class="p-3 bg-slate-50 rounded-xl outline-none text-xs text-center font-bold" placeholder="اللون">
+                                <input type="text" id="carBrand" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="الماركة (اختياري)">
+                                <input type="text" id="carModel" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="الطراز (اختياري)">
+                                <input type="text" id="carColor" class="p-3 bg-slate-50 rounded-xl outline-none text-[11px] sm:text-xs text-center font-bold" placeholder="اللون (اختياري)">
                             </div>
                             
                             <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
@@ -213,11 +230,17 @@
                             
                             <div class="flex-grow space-y-6 relative z-10">
                                 <div class="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
-                                    <p id="viewGroupTitle" class="text-purple-100 text-[10px] mb-1 font-black uppercase tracking-widest">---</p>
-                                    <p id="viewName" class="text-lg font-black text-white truncate">---</p>
-                                    <div class="flex justify-between items-center mt-1">
-                                        <p id="viewTitle" class="text-[10px] text-purple-200 font-semibold">---</p>
-                                        <div class="flex gap-1">
+                                    <div class="flex justify-between items-start gap-2">
+                                        <div class="min-w-0 flex-1">
+                                            <p id="viewGroupTitle" class="text-purple-100 text-[10px] mb-1 font-black uppercase tracking-widest">---</p>
+                                            <p id="viewName" class="text-lg font-black text-white truncate">---</p>
+                                        </div>
+                                        <!-- أيقونة العلم البارزة -->
+                                        <p id="viewNationality" class="text-3xl leading-none drop-shadow-md hidden flex-shrink-0" title="الجنسية" dir="ltr">---</p>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <p id="viewTitle" class="text-[10px] text-purple-200 font-semibold truncate pr-2">---</p>
+                                        <div class="flex gap-1 items-center flex-shrink-0">
                                             <p id="viewEmpId" class="text-[9px] text-white font-bold bg-black/20 px-2 py-0.5 rounded tracking-widest hidden" dir="ltr">---</p>
                                             <p id="viewNationalId" class="text-[9px] text-white font-bold bg-black/20 px-2 py-0.5 rounded tracking-widest hidden" dir="ltr">---</p>
                                         </div>
@@ -349,6 +372,33 @@
     <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-3.5 rounded-full shadow-2xl hidden z-50 text-xs font-bold flex items-center gap-3 transition-all"></div>
 
     <script>
+        // بيانات الدول والأعلام
+        const continentsData = {
+            africa: [
+                {n:"الجزائر", f:"🇩🇿"}, {n:"أنغولا", f:"🇦🇴"}, {n:"بنين", f:"🇧🇯"}, {n:"بوتسوانا", f:"🇧🇼"}, {n:"بوركينا فاسو", f:"🇧🇫"}, {n:"بوروندي", f:"🇧🇮"}, {n:"الرأس الأخضر", f:"🇨🇻"}, {n:"الكاميرون", f:"🇨🇲"}, {n:"جمهورية أفريقيا الوسطى", f:"🇨🇫"}, {n:"تشاد", f:"🇹🇩"}, {n:"جزر القمر", f:"🇰🇲"}, {n:"الكونغو (برازافيل)", f:"🇨🇬"}, {n:"الكونغو (كينشاسا)", f:"🇨🇩"}, {n:"جيبوتي", f:"🇩🇯"}, {n:"مصر", f:"🇪🇬"}, {n:"غينيا الاستوائية", f:"🇬🇶"}, {n:"إريتريا", f:"🇪🇷"}, {n:"إسواتيني", f:"🇸🇿"}, {n:"إثيوبيا", f:"🇪🇹"}, {n:"الغابون", f:"🇬🇦"}, {n:"غامبيا", f:"🇬🇲"}, {n:"غانا", f:"🇬🇭"}, {n:"غينيا", f:"🇬🇳"}, {n:"غينيا بيساو", f:"🇬🇼"}, {n:"كينيا", f:"🇰🇪"}, {n:"ليسوتو", f:"🇱🇸"}, {n:"ليبيريا", f:"🇱🇷"}, {n:"ليبيا", f:"🇱🇾"}, {n:"مدغشقر", f:"🇲🇬"}, {n:"مالاوي", f:"🇲🇼"}, {n:"مالي", f:"🇲🇱"}, {n:"موريتانيا", f:"🇲🇷"}, {n:"موريشيوس", f:"🇲🇺"}, {n:"المغرب", f:"🇲🇦"}, {n:"موزمبيق", f:"🇲🇿"}, {n:"ناميبيا", f:"🇳🇦"}, {n:"النيجر", f:"🇳🇪"}, {n:"نيجيريا", f:"🇳🇬"}, {n:"رواندا", f:"🇷🇼"}, {n:"ساو تومي وبرينسيب", f:"🇸🇹"}, {n:"السنغال", f:"🇸🇳"}, {n:"سيشل", f:"🇸🇨"}, {n:"سيراليون", f:"🇸🇱"}, {n:"الصومال", f:"🇸🇴"}, {n:"جنوب أفريقيا", f:"🇿🇦"}, {n:"جنوب السودان", f:"🇸🇸"}, {n:"السودان", f:"🇸🇩"}, {n:"تنزانيا", f:"🇹🇿"}, {n:"توغو", f:"🇹🇬"}, {n:"تونس", f:"🇹🇳"}, {n:"أوغندا", f:"🇺🇬"}, {n:"زامبيا", f:"🇿🇲"}, {n:"زيمبابوي", f:"🇿🇼"}
+            ],
+            asia: [
+                {n:"السعودية", f:"🇸🇦"}, {n:"أفغانستان", f:"🇦🇫"}, {n:"أرمينيا", f:"🇦🇲"}, {n:"أذربيجان", f:"🇦🇿"}, {n:"البحرين", f:"🇧🇭"}, {n:"بنغلاديش", f:"🇧🇩"}, {n:"بوتان", f:"🇧🇹"}, {n:"بروناي", f:"🇧🇳"}, {n:"كمبوديا", f:"🇰🇭"}, {n:"الصين", f:"🇨🇳"}, {n:"قبرص", f:"🇨🇾"}, {n:"جورجيا", f:"🇬🇪"}, {n:"الهند", f:"🇮🇳"}, {n:"إندونيسيا", f:"🇮🇩"}, {n:"إيران", f:"🇮🇷"}, {n:"العراق", f:"🇮🇶"}, {n:"اليابان", f:"🇯🇵"}, {n:"الأردن", f:"🇯🇴"}, {n:"كازاخستان", f:"🇰🇿"}, {n:"الكويت", f:"🇰🇼"}, {n:"قرغيزستان", f:"🇰🇬"}, {n:"لاوس", f:"🇱🇦"}, {n:"لبنان", f:"🇱🇧"}, {n:"ماليزيا", f:"🇲🇾"}, {n:"المالديف", f:"🇲🇻"}, {n:"منغوليا", f:"🇲🇳"}, {n:"ميانمار", f:"🇲🇲"}, {n:"نيبال", f:"🇳🇵"}, {n:"كوريا الشمالية", f:"🇰🇵"}, {n:"عُمان", f:"🇴🇲"}, {n:"باكستان", f:"🇵🇰"}, {n:"فلسطين", f:"🇵🇸"}, {n:"الفلبين", f:"🇵🇭"}, {n:"قطر", f:"🇶🇦"}, {n:"سنغافورة", f:"🇸🇬"}, {n:"كوريا الجنوبية", f:"🇰🇷"}, {n:"سريلانكا", f:"🇱🇰"}, {n:"سوريا", f:"🇸🇾"}, {n:"طاجيكستان", f:"🇹🇯"}, {n:"تايلاند", f:"🇹🇭"}, {n:"تيمور الشرقية", f:"🇹🇱"}, {n:"تركيا", f:"🇹🇷"}, {n:"تركمانستان", f:"🇹🇲"}, {n:"الإمارات", f:"🇦🇪"}, {n:"أوزبكستان", f:"🇺🇿"}, {n:"فيتنام", f:"🇻🇳"}, {n:"اليمن", f:"🇾🇪"}
+            ],
+            europe: [
+                {n:"ألبانيا", f:"🇦🇱"}, {n:"أندورا", f:"🇦🇩"}, {n:"النمسا", f:"🇦🇹"}, {n:"بيلاروس", f:"🇧🇾"}, {n:"بلجيكا", f:"🇧🇪"}, {n:"البوسنة والهرسك", f:"🇧🇦"}, {n:"بلغاريا", f:"🇧🇬"}, {n:"كرواتيا", f:"🇭🇷"}, {n:"التشيك", f:"🇨🇿"}, {n:"الدنمارك", f:"🇩🇰"}, {n:"إستونيا", f:"🇪🇪"}, {n:"فنلندا", f:"🇫🇮"}, {n:"فرنسا", f:"🇫🇷"}, {n:"ألمانيا", f:"🇩🇪"}, {n:"اليونان", f:"🇬🇷"}, {n:"المجر", f:"🇭🇺"}, {n:"آيسلندا", f:"🇮🇸"}, {n:"أيرلندا", f:"🇮🇪"}, {n:"إيطاليا", f:"🇮🇹"}, {n:"كوسوفو", f:"🇽🇰"}, {n:"لاتفيا", f:"🇱🇻"}, {n:"ليختنشتاين", f:"🇱🇮"}, {n:"ليتوانيا", f:"🇱🇹"}, {n:"لوكسمبورغ", f:"🇱🇺"}, {n:"مالطا", f:"🇲🇹"}, {n:"مولدوفا", f:"🇲🇩"}, {n:"موناكو", f:"🇲🇨"}, {n:"الجبل الأسود", f:"🇲🇪"}, {n:"هولندا", f:"🇳🇱"}, {n:"مقدونيا الشمالية", f:"🇲🇰"}, {n:"النرويج", f:"🇳🇴"}, {n:"بولندا", f:"🇵🇱"}, {n:"البرتغال", f:"🇵🇹"}, {n:"رومانيا", f:"🇷🇴"}, {n:"روسيا", f:"🇷🇺"}, {n:"سان مارينو", f:"🇸🇲"}, {n:"صربيا", f:"🇷🇸"}, {n:"سلوفاكيا", f:"🇸🇰"}, {n:"سلوفينيا", f:"🇸🇮"}, {n:"إسبانيا", f:"🇪🇸"}, {n:"السويد", f:"🇸🇪"}, {n:"سويسرا", f:"🇨🇭"}, {n:"أوكرانيا", f:"🇺🇦"}, {n:"المملكة المتحدة", f:"🇬🇧"}, {n:"الفاتيكان", f:"🇻🇦"}
+            ],
+            na: [
+                {n:"كندا", f:"🇨🇦"}, {n:"الولايات المتحدة", f:"🇺🇸"}, {n:"المكسيك", f:"🇲🇽"}, {n:"بليز", f:"🇧🇿"}, {n:"كوستاريكا", f:"🇨🇷"}, {n:"السلفادور", f:"🇸🇻"}, {n:"غواتيمالا", f:"🇬🇹"}, {n:"هندوراس", f:"🇭🇳"}, {n:"نيكاراغوا", f:"🇳🇮"}, {n:"بنما", f:"🇵🇦"}, {n:"أنتيغوا وبربودا", f:"🇦🇬"}, {n:"جزر البهاما", f:"🇧🇸"}, {n:"باربادوس", f:"🇧🇧"}, {n:"كوبا", f:"🇨🇺"}, {n:"دومينيكا", f:"🇩🇲"}, {n:"جمهورية الدومينيكان", f:"🇩🇴"}, {n:"غرينادا", f:"🇬🇩"}, {n:"هايتي", f:"🇭🇹"}, {n:"جامايكا", f:"🇯🇲"}, {n:"سانت كيتس ونيفيس", f:"🇰🇳"}, {n:"سانت لوسيا", f:"🇱🇨"}, {n:"سانت فنسنت والغرينادين", f:"🇻🇨"}, {n:"ترينيداد وتوباغو", f:"🇹🇹"}
+            ],
+            sa: [
+                {n:"الأرجنتين", f:"🇦🇷"}, {n:"بوليفيا", f:"🇧🇴"}, {n:"البرازيل", f:"🇧🇷"}, {n:"تشيلي", f:"🇨🇱"}, {n:"كولومبيا", f:"🇨🇴"}, {n:"الإكوادور", f:"🇪🇨"}, {n:"غيانا", f:"🇬🇾"}, {n:"باراغواي", f:"🇵🇾"}, {n:"بيرو", f:"🇵🇪"}, {n:"سورينام", f:"🇸🇷"}, {n:"أوروغواي", f:"🇺🇾"}, {n:"فنزويلا", f:"🇻🇪"}
+            ],
+            oceania: [
+                {n:"أستراليا", f:"🇦🇺"}, {n:"نيوزيلندا", f:"🇳🇿"}, {n:"فيجي", f:"🇫🇯"}, {n:"بابوا غينيا الجديدة", f:"🇵🇬"}, {n:"جزر سليمان", f:"🇸🇧"}, {n:"فانواتو", f:"🇻🇺"}, {n:"ساموا", f:"🇼🇸"}, {n:"كيريباتي", f:"🇰🇮"}, {n:"ميكرونيزيا", f:"🇫🇲"}, {n:"ناورو", f:"🇳🇷"}, {n:"بالاو", f:"🇵🇼"}, {n:"تونغا", f:"🇹🇴"}, {n:"توفالو", f:"🇹🇻"}, {n:"جزر مارشال", f:"🇲🇭"}
+            ]
+        };
+
+        const countryFlags = {};
+        for(let cont in continentsData) {
+            continentsData[cont].forEach(c => countryFlags[c.n] = c.f);
+        }
+
         // التهيئة والمتغيرات الأساسية
         let groups = JSON.parse(localStorage.getItem('spark_parking_groups')) || [{id: 'g_default', name: 'الموظفين'}];
         let employees = JSON.parse(localStorage.getItem('spark_parking_emps')) || [];
@@ -358,12 +408,36 @@
         let editingId = null; 
         let currentCardTheme = 'purple'; 
 
+        // دوال القارات والدول
+        function updateCountries() {
+            const contSelect = document.getElementById('empContinent');
+            const natSelect = document.getElementById('empNationality');
+            const selectedCont = contSelect.value;
+            
+            if(!selectedCont) {
+                natSelect.innerHTML = '<option value="" disabled selected>الدولة</option>';
+                natSelect.disabled = true;
+                return;
+            }
+
+            const countries = continentsData[selectedCont];
+            natSelect.innerHTML = '<option value="" disabled selected>الدولة</option>' + 
+                                  countries.map(c => `<option value="${c.n}">${c.n} ${c.f}</option>`).join('');
+            natSelect.disabled = false;
+        }
+
+        function findContinentByCountry(cName) {
+            for(let cont in continentsData) {
+                if(continentsData[cont].some(c => c.n === cName)) return cont;
+            }
+            return '';
+        }
+
         // دوال نافذة المجموعات (Modal)
         function openGroupsModal() {
             const modal = document.getElementById('groupsModal');
             const content = document.getElementById('groupsModalContent');
             modal.classList.remove('hidden');
-            // تأخير بسيط لتفعيل الأنيميشن
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 content.classList.remove('scale-95');
@@ -405,7 +479,6 @@
             if(formSelect) {
                 const currentVal = formSelect.value;
                 formSelect.innerHTML = optionsHtml;
-                // الحفاظ على التحديد السابق إن وجد
                 if(currentVal && groups.find(g => g.id === currentVal)) formSelect.value = currentVal;
             }
             
@@ -449,7 +522,6 @@
                 groups = groups.filter(g => g.id !== id);
                 const defaultGroupId = groups[0].id;
                 
-                // تحديث جميع الموظفين التابعين للمجموعة المحذوفة
                 employees.forEach(emp => {
                     if(emp.groupId === id) emp.groupId = defaultGroupId;
                 });
@@ -499,18 +571,19 @@
 
             const empData = {
                 id: editingId || ('ID' + Math.random().toString(36).substr(2, 6).toUpperCase()),
-                groupId: document.getElementById('empGroup').value, // التقاط المجموعة
+                groupId: document.getElementById('empGroup').value, 
                 fName: fName,
                 mName: mName,
                 lName: lName,
                 name: fullName,
+                nationality: document.getElementById('empNationality').value || '', 
                 nationalId: natIdVal || '',
                 employeeId: document.getElementById('empId').value || '',
                 title: document.getElementById('empTitle').value || '---',
                 phone: phoneVal || '---',
-                brand: document.getElementById('carBrand').value,
-                model: document.getElementById('carModel').value,
-                color: document.getElementById('carColor').value,
+                brand: document.getElementById('carBrand').value || '',
+                model: document.getElementById('carModel').value || '',
+                color: document.getElementById('carColor').value || '',
                 plateAr: plateArCombined,
                 plateNum: document.getElementById('pNum').value,
                 plateEn: document.getElementById('pEn').value
@@ -535,6 +608,9 @@
                 employees.unshift(empData);
                 showToast("✅ تم إصدار التصريح بنجاح");
                 this.reset();
+                // إعادة ضبط الدولة
+                document.getElementById('empNationality').innerHTML = '<option value="" disabled selected>الدولة</option>';
+                document.getElementById('empNationality').disabled = true;
                 showPreview(empData.id);
             }
             
@@ -551,7 +627,6 @@
             document.getElementById('submitBtn').innerText = "تحديث بيانات البطاقة";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
 
-            // جلب المجموعة (إذا كانت قديمة نضعها في الافتراضي)
             const gId = emp.groupId || groups[0].id;
             document.getElementById('empGroup').value = gId;
 
@@ -574,6 +649,21 @@
                     document.getElementById('empLastName').value = parts.pop();
                     document.getElementById('empMiddleName').value = parts.join(' ');
                 }
+            }
+
+            // تحديث القارة والدولة
+            const cont = findContinentByCountry(emp.nationality);
+            const contSelect = document.getElementById('empContinent');
+            const natSelect = document.getElementById('empNationality');
+            
+            if(cont) {
+                contSelect.value = cont;
+                updateCountries();
+                natSelect.value = emp.nationality;
+            } else {
+                contSelect.value = "";
+                natSelect.innerHTML = '<option value="" disabled selected>الدولة</option>';
+                natSelect.disabled = true;
             }
 
             document.getElementById('empNationalId').value = emp.nationalId || '';
@@ -602,13 +692,16 @@
             document.getElementById('formTitle').innerText = "إصدار تصريح جديد";
             document.getElementById('submitBtn').innerText = "حفظ وإصدار البطاقة";
             document.getElementById('cancelEditBtn').classList.add('hidden');
+            
+            // إعادة ضبط الدولة
+            document.getElementById('empNationality').innerHTML = '<option value="" disabled selected>الدولة</option>';
+            document.getElementById('empNationality').disabled = true;
         }
 
         function renderEmployees() {
             const list = document.getElementById('employeesList');
             const filterGroupId = document.getElementById('filterGroup').value;
             
-            // تطبيق الفلترة
             const filteredEmployees = filterGroupId === 'all' 
                 ? employees 
                 : employees.filter(emp => (emp.groupId || groups[0].id) === filterGroupId);
@@ -627,7 +720,7 @@
                                 ${emp.name.charAt(0)}
                             </div>
                             <div>
-                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">${emp.name}</h4>
+                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">${emp.name} <span class="text-xs ml-1">${emp.nationality ? (countryFlags[emp.nationality] || '') : ''}</span></h4>
                                 <div class="flex gap-2">
                                     <span class="text-[8px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">${groupObj.name}</span>
                                     <span class="text-[9px] text-slate-400 font-medium">${emp.title !== '---' ? emp.title : ''}</span>
@@ -641,7 +734,7 @@
                     </div>
                     <div class="flex justify-between items-center bg-slate-50/80 p-2.5 rounded-xl">
                         <div class="text-[10px] font-bold text-slate-500">
-                            ${emp.brand} • ${emp.plateNum}
+                            ${[emp.brand, emp.plateNum].filter(Boolean).join(' • ')}
                         </div>
                         <span class="text-[8px] px-2.5 py-1 rounded-full font-black uppercase ${emp.isInside ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-500'}">
                             ${emp.isInside ? 'داخل المواقف' : 'بالخارج'}
@@ -650,10 +743,9 @@
                 </div>
             `}).join('');
             
-            document.getElementById('activeStats').innerText = employees.length; // عرض الإجمالي الكلي أعلى الصفحة
+            document.getElementById('activeStats').innerText = employees.length;
         }
 
-        // مساعدة للريندر
         function filteredLogsOrEmps(arr, container, msg) {
             if (!arr.length) {
                 container.innerHTML = `<div class="text-center py-20 opacity-20"><p class="text-4xl mb-2">📭</p><p class="text-xs font-bold">${msg}</p></div>`;
@@ -680,6 +772,16 @@
             if(document.getElementById('viewName')) document.getElementById('viewName').innerText = emp.name;
             if(document.getElementById('viewTitle')) document.getElementById('viewTitle').innerText = emp.title || '---';
             
+            const natioEl = document.getElementById('viewNationality');
+            if(natioEl) {
+                if(emp.nationality && emp.nationality !== '---' && emp.nationality !== '') {
+                    natioEl.innerText = countryFlags[emp.nationality] || '🌍';
+                    natioEl.classList.remove('hidden');
+                } else {
+                    natioEl.classList.add('hidden');
+                }
+            }
+
             const empIdEl = document.getElementById('viewEmpId');
             if(empIdEl) {
                 if(emp.employeeId && emp.employeeId !== '---' && emp.employeeId !== '') {
@@ -700,7 +802,10 @@
                 }
             }
 
-            if(document.getElementById('viewVehicle')) document.getElementById('viewVehicle').innerText = `${emp.brand} ${emp.model} - ${emp.color || '---'}`;
+            if(document.getElementById('viewVehicle')) {
+                const vParts = [emp.brand, emp.model, emp.color].filter(Boolean).join(' - ');
+                document.getElementById('viewVehicle').innerText = vParts || '---';
+            }
             if(document.getElementById('viewPAr')) document.getElementById('viewPAr').innerText = (emp.plateAr || '').replace(/\s/g, '');
             if(document.getElementById('viewPNum')) document.getElementById('viewPNum').innerText = emp.plateNum;
             if(document.getElementById('viewPEn')) document.getElementById('viewPEn').innerText = emp.plateEn;
@@ -770,7 +875,7 @@
             
             logs.unshift({
                 name: employees[idx].name,
-                plate: `${employees[idx].brand} (${employees[idx].plateNum})`,
+                plate: `${employees[idx].brand ? employees[idx].brand + ' ' : ''}(${employees[idx].plateNum})`,
                 type: type === 'IN' ? 'دخول' : 'خروج',
                 time: now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
                 date: now.toLocaleDateString('ar-SA'),
@@ -887,7 +992,7 @@
                 const canvas = await html2canvas(element, {
                     scale: 3, 
                     useCORS: true, 
-                    allowTaint: true, // لتفادي مشاكل الحماية مع الصور المدمجة
+                    allowTaint: true, 
                     backgroundColor: null 
                 });
                 
@@ -896,7 +1001,6 @@
                 
                 const dataUrl = canvas.toDataURL('image/png');
 
-                // المحاولة الأولى: استخدام نظام المشاركة الأصلية للهاتف (مفيد للواتساب ومباشرة للاستديو)
                 try {
                     const response = await fetch(dataUrl);
                     const blob = await response.blob();
@@ -909,13 +1013,12 @@
                             text: `بطاقة دخول الموظف: ${emp.name}`
                         });
                         showToast("✅ تم بنجاح");
-                        return; // إذا نجحت المشاركة لا نعرض النافذة
+                        return; 
                     }
                 } catch (error) {
                     console.log("تم الإلغاء أو لا يدعم المشاركة", error);
                 }
 
-                // المحاولة البديلة والآمنة 100% للهواتف: إظهار الصورة في النافذة ليضغط عليها مطولاً
                 showImageModal(dataUrl);
                 
             } catch (err) {
@@ -951,7 +1054,7 @@
 
         window.onload = () => {
             initDateInputs();
-            updateGroupSelects(); // تحميل المجموعات في القوائم المنسدلة
+            updateGroupSelects(); 
             renderEmployees();
             switchTab('mgmt');
         };
